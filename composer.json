@@ -1,0 +1,18 @@
+{
+    "name": "pay-wallet/merchant",
+    "authors": [
+        {
+            "name": "PayWallet Developers",
+            "email": "pay-wallet.ru@yandex.ru"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "guzzlehttp/guzzle": "^6.3@dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "PayWallet\\": "src/"
+        }
+    }
+}
