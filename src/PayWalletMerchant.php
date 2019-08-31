@@ -24,42 +24,21 @@ class PayWalletMerchant
     }
 
     /**
-     * @param $code
-     * @return \Psr\Http\Message\StreamInterface
-     * @throws PayWalletMerchantException
-     */
-    private function getCurrencyByCode($code)
-    {
-        try {
-            return $this->parseResponse(
-                $this->client->get("/currency/by-code/$code")
-            );
-        } catch (PayWalletMerchantException $exception) {
-            switch ($exception->getCode()) {
-                case 404:
-                    throw new PayWalletMerchantException('Валюта не найдена', $exception->getCode());
-                    break;
-                default:
-                    throw new PayWalletMerchantException($exception->getMessage(), $exception->getCode());
-            }
-        }
-    }
-
-    /**
      * @param $amount
      * @param $currency_code
      * @param $payment_system_id
+     * @param $order_id
      * @return mixed
      * @throws PayWalletMerchantException
      */
     public function payment($amount, $currency_code, $payment_system_id, $order_id)
     {
-        $currency = $this->getCurrencyByCode($currency_code);
         $response = $this->parseResponse($this->client->post('/merchant/payment', [
             'amount' => $amount,
-            'currency_id' => $currency['id'],
+            'currency_code' => $currency_code,
             'payment_system_id' => $payment_system_id,
             'merchant_id' => $this->merchant_id,
+            'order_id' => $order_id
         ]));
 
         return $response['redirect_url'];
@@ -75,7 +54,7 @@ class PayWalletMerchant
     public function paymentComplete($amount, $currency_code, $payment_system_id, $order_id)
     {
         if (!$this->checkPost([
-            'amount', 'currency_code', 'currency_id',
+            'amount', 'currency_code',
             'desc', 'status', 'order_id', 'payment_system_id',
             'payer_account', 'transaction_id', 'sign_hash'
         ])) {
