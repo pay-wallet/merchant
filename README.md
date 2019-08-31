@@ -29,7 +29,7 @@ ___
 Если у вас уже используется composer, то просто обновите секции `require` и `repositories`.
 * Выполните `composer install`
 * Если все прошло успешно, в корне проекта появится директория `vendor`
-* Последний этап в установке пакета - подключение библиотек к вашему проекту.
+* Последний этап в установке пакета - загрузка библиотек к вашему проекту.  
 Для этого добавьте в ваш скрипт `index.php` строку `require __DIR__ . '/vendor/autoload.php;'`.
 `
 ___ 
@@ -55,7 +55,7 @@ $url = $merchant->payment($amount,$currency_code,$payment_system_id,$order_id);
 ```
 
 * `$merchant_id` - идентификатор вашего мерчанта PayWallet
-* `$merchant_secret_key` - Секретный ключ вашего мерчанта PayWallet
+* `$merchant_secret_key` - секретный ключ вашего мерчанта PayWallet
 * `$amount` - сумма платежа
 * `$currency_code` - валюта платежа
 * `$payment_system_id` - идентификатор платежной системы
@@ -93,11 +93,11 @@ if ($is_success === true) {
 ```
 
 * `$merchant_id` - идентификатор вашего мерчанта PayWallet
-* `$merchant_secret_key` - Секретный ключ вашего мерчанта PayWallet
+* `$merchant_secret_key` - секретный ключ вашего мерчанта PayWallet
 * `$amount` - сумма платежа
 * `$currency_code` - валюта платежа
 * `$payment_system_id` - идентификатор платежной системы
-* `$order_id` - числовой идентификатор заказа в базе данных
+* `$order_id` - числовой идентификатор заказа на вашем сайте
 
 
 *ВНИМАНИЕ!*
@@ -109,3 +109,8 @@ if ($is_success === true) {
 * `$order_id` - тип int
 
 *ЕСЛИ ТИПЫ НЕ БУДУТ СОБЛЮДЕНЫ ТО ПЛАТЕЖ НЕ ПРОЙДЕТ ПРОВЕРКУ*
+
+
+___
+
+По вопросам обращайтесь на pay-wallet.ru@yandex.ru
