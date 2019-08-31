@@ -71,7 +71,6 @@ class PayWalletMerchant
      * @param $payment_system_id
      * @param $order_id
      * @return mixed
-     * @throws PayWalletMerchantException
      */
     public function paymentComplete($amount, $currency_code, $payment_system_id, $order_id)
     {
@@ -120,7 +119,6 @@ class PayWalletMerchant
     /**
      * @param array $params
      * @return bool
-     * @throws PayWalletMerchantException
      */
     private function checkPost(array $params)
     {
