@@ -77,39 +77,37 @@ $url = $merchant->payment($amount,$currency_code,$payment_system_id,$order_id);
 <?php
 require __DIR__ . '/vendor/autoload.php';
 
-$merchant = new \PayWallet\PayWalletMerchant(000000, "XXXXXX");
-$amount = 100.0;
+$merchant_id = 000000;
+$merchant_secret_key = 'XXXXXX';
 $currency_code = 'RUB';
-$payment_system_id = 1;
+$payment_system_id = 2;
 $order_id = rand(1, 99999);
 
-$is_success = $merchant->paymentComplete($amount, $currency_code, $payment_system_id, $order_id);
+$merchant = new \PayWallet\PayWalletMerchant($merchant_id,$merchant_secret_key);
+
+$is_success = $merchant->paymentComplete($currency_code, $payment_system_id, $order_id);
 
 if ($is_success === true) {
     // ваш код обработки успешной оплаты
 }else{
     // ваш код обработки неуспешной оплаты
 }
-```
 
+```
 * `$merchant_id` - идентификатор вашего мерчанта PayWallet
 * `$merchant_secret_key` - секретный ключ вашего мерчанта PayWallet
-* `$amount` - сумма платежа
 * `$currency_code` - валюта платежа
 * `$payment_system_id` - идентификатор платежной системы
 * `$order_id` - числовой идентификатор заказа на вашем сайте
 
 
-*ВНИМАНИЕ!*
-СТРОГО СОБЛЮДАЙТЕ ТИПЫ ДАННЫХ.   
-Метод `paymentComplete` принимает следующие типы данных:
-* `$amount` - тип float или int
-* `$currency_code` - строка
-* `$payment_system_id` - тип int
-* `$order_id` - тип int
-
-*ЕСЛИ ТИПЫ НЕ БУДУТ СОБЛЮДЕНЫ ТО ПЛАТЕЖ НЕ ПРОЙДЕТ ПРОВЕРКУ*
-
+### Идентификаторы платежных систем
+* 1 - Pay Wallet
+* 2 - Payeer
+* 7 - Advanced Cash	
+* 51 - Яндекс.Деньги
+* 52 - Perfect Money (USD)
+* 53 - Perfect Money (EUR)
 
 ___
 
