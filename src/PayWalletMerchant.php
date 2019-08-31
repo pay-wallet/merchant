@@ -2,6 +2,8 @@
 
 namespace PayWallet;
 
+use Psr\Http\Message\ResponseInterface;
+
 class PayWalletMerchant
 {
     private $endpoint = 'https://pay-wallet.ru/api';
@@ -24,21 +26,21 @@ class PayWalletMerchant
     /**
      * @param $code
      * @return \Psr\Http\Message\StreamInterface
-     * @throws PayWalletException
+     * @throws PayWalletMerchantException
      */
     private function getCurrencyByCode($code)
     {
         try {
-            return $this->parseReponse(
+            return $this->parseResponse(
                 $this->client->get("/currency/by-code/$code")
             );
-        } catch (PayWalletException $exception) {
+        } catch (PayWalletMerchantException $exception) {
             switch ($exception->getCode()) {
                 case 404:
-                    throw new PayWalletException('Валюта не найдена', $exception->getCode());
+                    throw new PayWalletMerchantException('Валюта не найдена', $exception->getCode());
                     break;
                 default:
-                    throw new PayWalletException($exception->getMessage(), $exception->getCode());
+                    throw new PayWalletMerchantException($exception->getMessage(), $exception->getCode());
             }
         }
     }
@@ -48,12 +50,12 @@ class PayWalletMerchant
      * @param $currency_code
      * @param $payment_system_id
      * @return mixed
-     * @throws PayWalletException
+     * @throws PayWalletMerchantException
      */
     public function payment($amount, $currency_code, $payment_system_id, $order_id)
     {
         $currency = $this->getCurrencyByCode($currency_code);
-        $response = $this->parseReponse($this->client->post('/merchant/payment', [
+        $response = $this->parseResponse($this->client->post('/merchant/payment', [
             'amount' => $amount,
             'currency_id' => $currency['id'],
             'payment_system_id' => $payment_system_id,
@@ -64,63 +66,71 @@ class PayWalletMerchant
     }
 
     /**
-     * @param $successCallback
-     * @param $failCallback
+     * @param $amount
+     * @param $currency_code
+     * @param $payment_system_id
+     * @param $order_id
      * @return mixed
-     * @throws PayWalletException
+     * @throws PayWalletMerchantException
      */
-    public function paymentComplete($successCallback, $failCallback)
+    public function paymentComplete($amount, $currency_code, $payment_system_id, $order_id)
     {
-        $this->checkPost([
+        if (!$this->checkPost([
             'amount', 'currency_code', 'currency_id',
             'desc', 'status', 'order_id', 'payment_system_id',
             'payer_account', 'transaction_id', 'sign_hash'
-        ]);
+        ])) {
+            return false;
+        }
 
-        if ($_POST['sign_hash'] == $this->calcSign(
-                $_POST['amount'],
-                $_POST['currency_id'],
-                $_POST['payment_system_id'],
+        if ($_POST['sign_hash'] != $this->calcSign(
+                $amount,
+                $currency_code,
+                $payment_system_id,
+                $order_id,
                 $this->merchant_id,
                 $this->merchant_secret_key
             )) {
-            return $successCallback($_POST);
-        } else {
-            return $failCallback($_POST);
+            return false;
         }
+
+        return $_POST['order_id'];
     }
 
     /**
-     * @param \Psr\Http\Message\ResponseInterface $response
+     * @param ResponseInterface $response
      * @return mixed
-     * @throws PayWalletException
+     * @throws PayWalletMerchantException
      */
-    private function parseReponse(\Psr\Http\Message\ResponseInterface $response)
+    private function parseResponse(ResponseInterface $response)
     {
         $data = \GuzzleHttp\json_decode($response, true);
         if ($response->getStatusCode() != 200) {
             $message = isset($data['message']) ? $data['message'] : 'Server Error. Code: ' . $response->getStatusCode();
-            throw new PayWalletException($message, $response->getStatusCode());
+            throw new PayWalletMerchantException($message, $response->getStatusCode());
         }
         return $data;
     }
 
-    private function calcSign($amount, $currency_id, $payment_system_id, $merchant_id, $secret_key)
+    private function calcSign($amount, $currency_code, $payment_system_id, $order_id, $merchant_id, $secret_key)
     {
-        return md5(implode(',', [$amount, $currency_id, $payment_system_id, $merchant_id, $secret_key]));
+        return md5(implode(',', [$amount, $currency_code, $payment_system_id, $order_id, $merchant_id, $secret_key]));
     }
 
     /**
      * @param array $params
-     * @throws PayWalletException
+     * @return bool
+     * @throws PayWalletMerchantException
      */
     private function checkPost(array $params)
     {
         foreach ($params as $param) {
             if (!isset($_POST[$param])) {
-                throw new PayWalletException("В HTTP запросе отсутствует параметр [$param]");
+                return false;
             }
         }
+
+        return true;
     }
 
 }

@@ -4,7 +4,7 @@ namespace PayWallet;
 
 use Throwable;
 
-class PayWalletException extends \Exception
+class PayWalletMerchantException extends \Exception
 {
     public function __construct($message = "", $code = 0, Throwable $previous = null)
     {
