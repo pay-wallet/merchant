@@ -104,7 +104,7 @@ if ($is_success === true) {
 ### Идентификаторы платежных систем
 * 1 - Pay Wallet
 * 2 - Payeer
-* 7 - Advanced Cash	
+* 7 - Advanced Cash	 
 * 51 - Яндекс.Деньги
 * 52 - Perfect Money (USD)
 * 53 - Perfect Money (EUR)

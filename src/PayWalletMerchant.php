@@ -67,7 +67,7 @@ class PayWalletMerchant
         }
 
         if ($_REQUEST['sign_hash'] != $this->calcSign(
-                $currency_code, $payment_system_id, $order_id,
+                $currency_code, $order_id,
                 $this->merchant_id, $this->merchant_secret_key
             )
             or $_REQUEST['status'] != 'SUCCESS') {
@@ -77,9 +77,9 @@ class PayWalletMerchant
         return $_REQUEST['order_id'];
     }
 
-    private function calcSign($currency_code, $payment_system_id, $order_id, $merchant_id, $secret_key)
+    private function calcSign($currency_code, $order_id, $merchant_id, $secret_key)
     {
-        $data = [strtoupper($currency_code), intval($payment_system_id), intval($order_id), intval($merchant_id), md5($secret_key)];
+        $data = [strtoupper($currency_code), intval($order_id), intval($merchant_id), md5($secret_key)];
         return md5(implode(',', $data));
     }
 
